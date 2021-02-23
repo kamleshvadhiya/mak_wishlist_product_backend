@@ -1,0 +1,82 @@
+<odoo>
+    <data>
+        <record id="wish_list_form_view" model="ir.ui.view">
+            <field name="name">wishlist.form.view</field>
+            <field name="model">product.wishlist</field>
+            <field name="arch" type="xml">
+                <form>
+                    <group>
+                        <group>
+                            <field name="partner_id"/>
+                            <field name="product_id"/>
+                            <field name="quantity"/>
+                        </group>
+                        <group>
+                            <field name="website_id"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                </form>
+            </field>
+        </record>
+        <record id="wish_list_tree_view" model="ir.ui.view">
+            <field name="name">wishlist.tree.view</field>
+            <field name="model">product.wishlist</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="partner_id"/>
+                    <field name="product_id"/>
+                    <field name="quantity"/>
+                </tree>
+            </field>
+        </record>
+        <record id="view_product_wishlist_search" model="ir.ui.view">
+            <field name="name">Production Lots Filter</field>
+            <field name="model">product.wishlist</field>
+            <field name="arch" type="xml">
+                <search string="Product WishList Filter">
+                    <field name="product_id" string="Product"
+                           filter_domain="['|',('product_id','ilike',self),('partner_id','ilike',self)]"/>
+                    <field name="partner_id"/>
+                    <group expand="0" string="Group By">
+                        <filter name="group_by_partner" string="Customer" domain="[]"
+                                context="{'group_by':'partner_id'}"/>
+                        <filter name="group_by_product" string="Product" domain="[]"
+                                context="{'group_by':'product_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+        <record id="action_wishlist" model="ir.actions.act_window">
+            <field name="name">WishList Products</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">product.wishlist</field>
+            <field name="view_ids"
+                   eval="[(5, 0, 0),(0, 0, {'view_mode': 'tree', 'view_id': ref('wish_list_tree_view')}),
+                           (0, 0, {'view_mode': 'form', 'view_id': ref('wish_list_form_view')})]"/>
+            <field name="context">{"search_default_group_by_partner":1}</field>
+            <field name="search_view_id" ref="view_product_wishlist_search"/>
+        </record>
+        <menuitem action="action_wishlist" id="wishlist_product" parent="website_sale.menu_reporting"
+        />
+        <record id="res_partner_view_form_mak_wishlist" model="ir.ui.view">
+            <field name="name">res.partner.view.form.aspl</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//notebook/page[@name='sales_purchases']" position="after">
+                    <page name='product_wishlist' string="Product Wishlist">
+                        <field name="wishlist_ids">
+                            <tree>
+                                <field name="product_id"/>
+                                <field name="quantity"/>
+                                <field name="website_id"/>
+                            </tree>
+                        </field>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
+
